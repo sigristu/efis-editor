@@ -40,7 +40,9 @@ export class TextWriter {
         }
         this._addLine(this._normalizeText(checklist.title));
 
-        this._addItems(checklist.items, checklistIdx);
+        // Calculate optimal dash position for this checklist
+        const dashPosition = this._calculateDashPosition(checklist.items);
+        this._addItems(checklist.items, checklistIdx, dashPosition);
 
         checklistIdx++;
       }
@@ -107,7 +109,35 @@ export class TextWriter {
     return metadataIdx;
   }
 
-  private _addItems(items: ChecklistItem[], checklistIdx: number) {
+  /**
+   * Calculates the optimal dash position for aligning challenge-response items.
+   * Returns the position where dashes should be aligned, or undefined if no alignment needed.
+   */
+  private _calculateDashPosition(items: ChecklistItem[]): number | undefined {
+    let maxPromptLength = 0;
+    let hasResponses = false;
+
+    for (const item of items) {
+      if (item.expectation && item.type === ChecklistItem_Type.ITEM_CHALLENGE_RESPONSE) {
+        hasResponses = true;
+        const promptLength = this._normalizeText(item.prompt).length;
+
+        // Calculate available space considering indent
+        const indentWidth = item.centered ? 0 : item.indent * this._options.indentWidth;
+        const availableSpace = this._options.maxLineLength ? this._options.maxLineLength - indentWidth : Infinity;
+        const expectationLength = this._options.expectationSeparator.length + this._normalizeText(item.expectation).length;
+
+        // Only consider this item if the full line would fit on one line
+        if (promptLength + expectationLength <= availableSpace) {
+          maxPromptLength = Math.max(maxPromptLength, promptLength);
+        }
+      }
+    }
+
+    return hasResponses && maxPromptLength > 0 ? maxPromptLength : undefined;
+  }
+
+  private _addItems(items: ChecklistItem[], checklistIdx: number, dashPosition?: number) {
     let itemIdx = 0;
 
     if (this._options.checklistTopBlankLine) {
@@ -140,9 +170,26 @@ export class TextWriter {
           throw new FormatError(`Unexpected item type: ${item.type.valueOf()}`);
       }
 
-      let fullLine = prefix + this._normalizeText(item.prompt);
+      let promptPart = prefix + this._normalizeText(item.prompt);
+      let fullLine = promptPart;
+
       if (item.expectation) {
-        fullLine += this._options.expectationSeparator;
+        // Calculate padding for dash alignment
+        let padding = '';
+        if (dashPosition !== undefined && item.type === ChecklistItem_Type.ITEM_CHALLENGE_RESPONSE) {
+          const indentWidth = item.centered ? 0 : item.indent * this._options.indentWidth;
+          const availableSpace = this._options.maxLineLength ? this._options.maxLineLength - indentWidth : Infinity;
+          const expectationLength = this._options.expectationSeparator.length + this._normalizeText(item.expectation).length;
+
+          // Only align if the full line would fit
+          if (promptPart.length + expectationLength <= availableSpace) {
+            const paddingNeeded = dashPosition - promptPart.length;
+            if (paddingNeeded > 0) {
+              padding = ' '.repeat(paddingNeeded);
+            }
+          }
+        }
+        fullLine += padding + this._options.expectationSeparator;
         fullLine += this._normalizeText(item.expectation);
       }
       fullLine += suffix;
