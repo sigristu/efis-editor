@@ -33,7 +33,7 @@ jobs:
       - name: Build
         run: npm run build:prod
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: dist/efis-editor/browser
 
@@ -56,7 +56,7 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
       - name: Create tag
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             github.rest.git.updateRef({

@@ -41,6 +41,24 @@ module.exports = tseslint.config(
       '@typescript-eslint/default-param-last': 'error',
       '@typescript-eslint/max-params': ['error', { max: 5 }],
       '@typescript-eslint/method-signature-style': ['error', 'method'],
+      // TODO: Complete upgrade to Angular 20.2 animations.
+      '@typescript-eslint/no-deprecated': [
+        'error',
+        {
+          allow: [
+            {
+              from: 'package',
+              name: 'NoopAnimationsModule',
+              package: '@angular/platform-browser/animations',
+            },
+            {
+              from: 'package',
+              name: 'provideAnimationsAsync',
+              package: '@angular/platform-browser/animations/async',
+            },
+          ],
+        },
+      ],
       '@typescript-eslint/no-extraneous-class': 'off',
       '@typescript-eslint/no-invalid-void-type': 'off',
       '@typescript-eslint/naming-convention': [
@@ -206,8 +224,6 @@ module.exports = tseslint.config(
       '@typescript-eslint/unbound-method': 'off',
       'no-await-in-loop': 'off',
       'no-restricted-imports': ['error', '@testing-library/dom'],
-      // Due to https://github.com/testing-library/eslint-plugin-testing-library/issues/1038:
-      'testing-library/no-node-access': 'off',
       'testing-library/no-render-in-lifecycle': 'off',
       'testing-library/prefer-explicit-assert': 'error',
       'testing-library/prefer-user-event': 'error',
