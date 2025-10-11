@@ -1,19 +1,49 @@
 <div class="command-bar">
+  <!-- Browser Storage Group -->
   <button mat-icon-button matTooltip="New file" aria-label="New file" (click)="onNewFile()">
     <mat-icon>note_add</mat-icon>
   </button>
   <button
     mat-icon-button
-    matTooltip="Open file"
-    aria-label="Open file"
+    matTooltip="Open file from storage"
+    aria-label="Open file from storage"
     [disabled]="!hasFiles()"
     (click)="openFile.emit(true)"
   >
     <mat-icon>folder_open</mat-icon>
   </button>
-  <button mat-icon-button matTooltip="Upload file" aria-label="Upload file" (click)="uploadFile.emit(true)">
+  <button mat-icon-button matTooltip="Upload file (drag & drop)" aria-label="Upload file" (click)="uploadFile.emit(true)">
     <mat-icon>upload</mat-icon>
   </button>
+
+  <div class="command-bar-separator"></div>
+
+  <!-- Local File System Group -->
+  <button mat-icon-button [matTooltip]="_hasFileSystemAccess ? 'Open file from disk' : 'Open file from disk (Chrome/Edge required for full support)'" aria-label="Open file from disk" (click)="openLocalFile.emit(true)">
+    <mat-icon>upload_file</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    [matTooltip]="_hasFileSystemAccess ? 'Save file to disk' : 'Save requires Chrome/Edge (use Save As for download)'"
+    aria-label="Save file to disk"
+    [disabled]="!fileIsOpen() || !_hasFileSystemAccess"
+    (click)="saveLocalFile.emit(false)"
+  >
+    <mat-icon>save</mat-icon>
+  </button>
+  <button
+    mat-icon-button
+    [matTooltip]="_hasFileSystemAccess ? 'Save file as...' : 'Download file as...'"
+    aria-label="Save file to disk as..."
+    [disabled]="!fileIsOpen()"
+    (click)="saveLocalFile.emit(true)"
+  >
+    <mat-icon>save_as</mat-icon>
+  </button>
+
+  <div class="command-bar-separator"></div>
+
+  <!-- Export & Utilities Group -->
   <button
     mat-icon-button
     matTooltip="Download file"

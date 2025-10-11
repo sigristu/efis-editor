@@ -8,6 +8,8 @@
           [fileIsOpen]="selectedFile !== undefined"
           (newFile)="onNewFile($event)"
           (openFile)="onOpenFile()"
+          (openLocalFile)="onOpenLocalFile()"
+          (saveLocalFile)="onSaveLocalFile($event)"
           (uploadFile)="onUploadFile()"
           (downloadFile)="onDownloadFile($event)"
           (deleteFile)="onDeleteFile()"
