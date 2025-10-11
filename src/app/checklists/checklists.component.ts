@@ -29,6 +29,7 @@ import { FormatId } from '../../model/formats/format-id';
 import { serializeChecklistFile } from '../../model/formats/format-registry';
 import { ChecklistStorage } from '../../model/storage/checklist-storage';
 import { GoogleDriveStorage } from '../../model/storage/gdrive';
+import { LocalFileStorage } from '../../model/storage/local-file-storage';
 import { PreferenceStorage } from '../../model/storage/preference-storage';
 import { NavData } from '../nav/nav-data';
 import { HotkeyRegistrar, HotkeyRegistree, HotkeyRegistry } from '../shared/hotkeys/hotkey-registration';
@@ -94,6 +95,7 @@ export class ChecklistsComponent implements OnInit, AfterViewInit, OnDestroy, Ho
   constructor(
     public store: ChecklistStorage,
     private readonly _gdrive: GoogleDriveStorage,
+    private readonly _localFileStorage: LocalFileStorage,
     private readonly _prefs: PreferenceStorage,
     private readonly _dialog: MatDialog,
     private readonly _snackBar: MatSnackBar,
@@ -506,6 +508,41 @@ export class ChecklistsComponent implements OnInit, AfterViewInit, OnDestroy, Ho
 
     await Promise.all([this.store.saveChecklistFile(file), this._displayFile(file)]);
     this._notifyComplete();
+  }
+
+  async onOpenLocalFile() {
+    this.showFilePicker = false;
+    this.showFileUpload = false;
+
+    try {
+      const file = await this._localFileStorage.openFile();
+      if (file) {
+        // Save to browser storage and display
+        await Promise.all([this.store.saveChecklistFile(file), this._displayFile(file)]);
+        this._notifyComplete();
+      }
+    } catch (error: any) {
+      console.error('Failed to open local file:', error);
+      this._snackBar.open(`Failed to open file: ${error.message}`, '');
+    }
+  }
+
+  async onSaveLocalFile(saveAs: boolean) {
+    this.showFilePicker = false;
+    this.showFileUpload = false;
+
+    if (!this.selectedFile) return;
+
+    try {
+      const success = await this._localFileStorage.saveFile(this.selectedFile, saveAs);
+      if (success) {
+        const fileName = await this._localFileStorage.getCurrentFileName();
+        this._snackBar.open(`Saved file${fileName ? ` "${fileName}"` : ''} to disk.`, '');
+      }
+    } catch (error: any) {
+      console.error('Failed to save local file:', error);
+      this._snackBar.open(`Failed to save file: ${error.message}`, '');
+    }
   }
 
   async onDownloadFile(formatId: FormatId) {

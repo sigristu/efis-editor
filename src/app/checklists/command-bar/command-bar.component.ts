@@ -9,6 +9,7 @@ import { TitleDialogComponent } from '../dialogs/title-dialog/title-dialog.compo
 
 import { FormatId } from '../../../model/formats/format-id';
 import { FORMAT_REGISTRY } from '../../../model/formats/format-registry';
+import { LocalFileStorage } from '../../../model/storage/local-file-storage';
 
 @Component({
   selector: 'checklist-command-bar',
@@ -24,12 +25,21 @@ export class ChecklistCommandBarComponent {
   readonly fileIsOpen = input.required<boolean>();
   readonly newFile = output<string>(); // Emits filename
   readonly openFile = output<boolean>();
+  readonly openLocalFile = output<boolean>();
+  readonly saveLocalFile = output<boolean>(); // Emits true for "Save As", false for "Save"
   readonly uploadFile = output<boolean>();
   readonly downloadFile = output<FormatId>();
   readonly deleteFile = output<boolean>();
   readonly fileInfo = output<boolean>();
 
-  constructor(private readonly _dialog: MatDialog) {}
+  protected readonly _hasFileSystemAccess: boolean;
+
+  constructor(
+    private readonly _dialog: MatDialog,
+    private readonly _localFileStorage: LocalFileStorage,
+  ) {
+    this._hasFileSystemAccess = this._localFileStorage.isFileSystemAccessSupported();
+  }
 
   async onNewFile() {
     const title = await TitleDialogComponent.promptForTitle({ promptType: 'file' }, this._dialog);
