@@ -8,7 +8,7 @@ import { TextWriter } from './text-writer';
 export const DYNON_FORMAT_OPTIONS: TextFormatOptions = {
   fileExtensions: [],
   indentWidth: 2,
-  allUppercase: true,
+  allUppercase: false,
   checklistTopBlankLine: true,
   outputMetadata: true,
 

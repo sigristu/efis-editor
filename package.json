@@ -10,7 +10,7 @@
     "start:ssr": "ng build && node dist/efis-editor/server/server.mjs",
     "build": "ng build",
     "build:prod": "ng build --configuration production --base-href /efis-editor/",
-    "genproto": "npx protoc --proto_path=src/model/proto --plugin=protoc-gen-ts=node_modules/@protobuf-ts/plugin/bin/protoc-gen-ts --ts_out=gen/ts src/model/proto/*.proto",
+    "genproto": "protoc -I src/model/proto --ts_out gen/ts src/model/proto/*.proto",
     "genkeys": "[ -f src/environments/dev-keys.ts ] || echo 'export const GDRIVE_CLIENT_ID = '\\''YOUR_ID'\\'';' > src/environments/dev-keys.ts",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -100,6 +100,7 @@
     "prettier": "^3.6.2",
     "prettier-eslint": "^16.4.2",
     "prettier-plugin-organize-imports": "^4.2.0",
+    "protoc": "^1.1.3",
     "typescript": "~5.8.3",
     "typescript-eslint": "8.39.0"
   }
