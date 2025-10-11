@@ -31,6 +31,7 @@
       #item
       [node]="node"
       (nodeRename)="onChecklistRename(node)"
+      (nodeDuplicate)="onChecklistDuplicate(node)"
       (nodeDelete)="onChecklistDelete(node)"
       [disableButtonHover]="dragging"
     />
@@ -67,6 +68,7 @@
         #group
         [node]="node"
         (nodeRename)="onGroupRename(node)"
+        (nodeDuplicate)="onGroupDuplicate(node)"
         (nodeDelete)="onGroupDelete(node)"
         [disableButtonHover]="dragging"
       />

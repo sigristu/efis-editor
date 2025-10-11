@@ -634,6 +634,23 @@ export class ChecklistTreeComponent implements OnInit, AfterViewInit {
     }
   }
 
+  onChecklistDuplicate(node: ChecklistTreeNode) {
+    const checklist = node.checklist!;
+    const group = node.group!;
+
+    // Create a deep copy of the checklist
+    const duplicatedChecklist = Checklist.clone(checklist);
+    duplicatedChecklist.title = `${checklist.title} - copy`;
+
+    // Insert the duplicated checklist right after the original
+    const insertIndex = node.checklistIdx! + 1;
+    group.checklists.splice(insertIndex, 0, duplicatedChecklist);
+
+    this._reloadFile(true);
+    this._selectChecklist(duplicatedChecklist, group);
+    this._scrollToSelectedChecklist();
+  }
+
   onChecklistDelete(node: ChecklistTreeNode) {
     // Update the default checklist index if needed.
     const file = this.file();
@@ -656,6 +673,27 @@ export class ChecklistTreeComponent implements OnInit, AfterViewInit {
   async onGroupRename(node: ChecklistTreeNode) {
     if (await this._fillTitle(node.group!, 'checklist group')) {
       this._reloadFile(true);
+    }
+  }
+
+  onGroupDuplicate(node: ChecklistTreeNode) {
+    const group = node.group!;
+    const file = this.file();
+    if (!file) return;
+
+    // Create a deep copy of the group
+    const duplicatedGroup = ChecklistGroup.clone(group);
+    duplicatedGroup.title = `${group.title} - copy`;
+
+    // Insert the duplicated group right after the original
+    const insertIndex = node.groupIdx! + 1;
+    file.groups.splice(insertIndex, 0, duplicatedGroup);
+
+    this._reloadFile(true);
+    // Select the first checklist in the duplicated group if it has any
+    if (duplicatedGroup.checklists.length > 0) {
+      this._selectChecklist(duplicatedGroup.checklists[0], duplicatedGroup);
+      this._scrollToSelectedChecklist();
     }
   }
 
