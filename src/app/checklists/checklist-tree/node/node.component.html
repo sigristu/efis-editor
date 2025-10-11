@@ -63,6 +63,16 @@
         <mat-icon>edit</mat-icon>
       </button>
       <button
+        data-testid="duplicate-button"
+        mat-icon-button
+        mat-small-icon-button
+        [attr.aria-label]="`Duplicate ${n.title}`"
+        [matTooltip]="`Duplicate ${n.title}`"
+        (click)="nodeDuplicate.emit(n)"
+      >
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <button
         data-testid="delete-button"
         mat-icon-button
         mat-small-icon-button
