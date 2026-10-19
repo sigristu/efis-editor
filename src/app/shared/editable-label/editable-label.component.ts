@@ -9,7 +9,7 @@ import {
   output,
   viewChild,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,7 +36,8 @@ import { DynamicDataPipe } from './dynamic-data.pipe';
   changeDetection: ChangeDetectionStrategy.Eager,
 })
 export class EditableLabelComponent {
-  control = new FormControl('');
+  // Validate in the control itself (not via the template), so validity is up to date as soon as editing starts.
+  control = new FormControl('', Validators.required);
   readonly input = viewChild<ElementRef<HTMLElement>>('promptInput');
 
   // Must have a separate output from value's so we can output even when no change is made.
