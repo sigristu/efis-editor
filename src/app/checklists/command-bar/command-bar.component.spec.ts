@@ -13,6 +13,9 @@ describe('ChecklistCommandBarComponent', () => {
   let loader: HarnessLoader;
   let newButton: HTMLButtonElement;
   let openButton: HTMLButtonElement;
+  let openLocalButton: HTMLButtonElement;
+  let saveLocalButton: HTMLButtonElement;
+  let saveLocalAsButton: HTMLButtonElement;
   let uploadButton: HTMLButtonElement;
   let downloadButton: HTMLButtonElement;
   let printButton: HTMLButtonElement;
@@ -20,6 +23,8 @@ describe('ChecklistCommandBarComponent', () => {
   let infoButton: HTMLButtonElement;
   let newFile: Mock<(value: string) => undefined>;
   let openFile: Mock<(value: boolean) => undefined>;
+  let openLocalFile: Mock<(value: boolean) => undefined>;
+  let saveLocalFile: Mock<(value: boolean) => undefined>;
   let uploadFile: Mock<(value: boolean) => undefined>;
   let downloadFile: Mock<(value: FormatId) => undefined>;
   let deleteFile: Mock<(value: boolean) => undefined>;
@@ -29,6 +34,8 @@ describe('ChecklistCommandBarComponent', () => {
   beforeEach(() => {
     newFile = vi.fn().mockName('ChecklistCommandBarComponent.newFile');
     openFile = vi.fn().mockName('ChecklistCommandBarComponent.openFile');
+    openLocalFile = vi.fn().mockName('CommandBar.openLocal');
+    saveLocalFile = vi.fn().mockName('CommandBar.saveLocal');
     uploadFile = vi.fn().mockName('CommandBar.upload');
     downloadFile = vi.fn().mockName('ChecklistCommandBarComponent.downloadFile');
     deleteFile = vi.fn().mockName('ChecklistCommandBarComponent.deleteFile');
@@ -40,11 +47,14 @@ describe('ChecklistCommandBarComponent', () => {
   async function renderComponent(hasFiles: boolean, fileIsOpen: boolean) {
     const { fixture } = await render(ChecklistCommandBarComponent, {
       inputs: { hasFiles: hasFiles, fileIsOpen: fileIsOpen },
-      on: { newFile, openFile, uploadFile, downloadFile, deleteFile, fileInfo },
+      on: { newFile, openFile, openLocalFile, saveLocalFile, uploadFile, downloadFile, deleteFile, fileInfo },
     });
 
     newButton = screen.queryByRole('button', { name: 'New file' })!;
-    openButton = screen.queryByRole('button', { name: 'Open file' })!;
+    openButton = screen.queryByRole('button', { name: 'Open file from storage' })!;
+    openLocalButton = screen.queryByRole('button', { name: 'Open file from disk' })!;
+    saveLocalButton = screen.queryByRole('button', { name: 'Save file to disk' })!;
+    saveLocalAsButton = screen.queryByRole('button', { name: 'Save file to disk as...' })!;
     uploadButton = screen.queryByRole('button', { name: 'Upload file' })!;
     downloadButton = screen.queryByRole('button', { name: 'Download file' })!;
     printButton = screen.queryByRole('button', { name: 'Print file' })!;
@@ -53,6 +63,9 @@ describe('ChecklistCommandBarComponent', () => {
 
     expect(newButton).toBeInTheDocument();
     expect(openButton).toBeInTheDocument();
+    expect(openLocalButton).toBeInTheDocument();
+    expect(saveLocalButton).toBeInTheDocument();
+    expect(saveLocalAsButton).toBeInTheDocument();
     expect(uploadButton).toBeInTheDocument();
     expect(downloadButton).toBeInTheDocument();
     expect(printButton).toBeInTheDocument();
@@ -67,6 +80,9 @@ describe('ChecklistCommandBarComponent', () => {
 
     expect(newButton).toBeEnabled();
     expect(openButton).toBeDisabled();
+    expect(openLocalButton).toBeEnabled();
+    expect(saveLocalButton).toBeDisabled();
+    expect(saveLocalAsButton).toBeDisabled();
     expect(uploadButton).toBeEnabled();
     expect(downloadButton).toBeDisabled();
     expect(printButton).toBeDisabled();
@@ -79,6 +95,9 @@ describe('ChecklistCommandBarComponent', () => {
 
     expect(newButton).toBeEnabled();
     expect(openButton).toBeEnabled();
+    expect(openLocalButton).toBeEnabled();
+    expect(saveLocalButton).toBeDisabled();
+    expect(saveLocalAsButton).toBeDisabled();
     expect(uploadButton).toBeEnabled();
     expect(downloadButton).toBeDisabled();
     expect(printButton).toBeDisabled();
@@ -91,6 +110,10 @@ describe('ChecklistCommandBarComponent', () => {
 
     expect(newButton).toBeEnabled();
     expect(openButton).toBeEnabled();
+    expect(openLocalButton).toBeEnabled();
+    // Saving in place requires the File System Access API, which Chromium supports.
+    expect(saveLocalButton).toBeEnabled();
+    expect(saveLocalAsButton).toBeEnabled();
     expect(uploadButton).toBeEnabled();
     expect(downloadButton).toBeEnabled();
     expect(printButton).toBeEnabled();
@@ -103,6 +126,27 @@ describe('ChecklistCommandBarComponent', () => {
     await user.click(openButton);
 
     expect(openFile).toHaveBeenCalledExactlyOnceWith(true);
+  });
+
+  it('should emit when Open from disk is clicked', async () => {
+    await renderComponent(false, false);
+    await user.click(openLocalButton);
+
+    expect(openLocalFile).toHaveBeenCalledExactlyOnceWith(true);
+  });
+
+  it('should emit when Save to disk is clicked', async () => {
+    await renderComponent(true, true);
+    await user.click(saveLocalButton);
+
+    expect(saveLocalFile).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it('should emit when Save to disk as is clicked', async () => {
+    await renderComponent(true, true);
+    await user.click(saveLocalAsButton);
+
+    expect(saveLocalFile).toHaveBeenCalledExactlyOnceWith(true);
   });
 
   it('should emit when Upload is clicked', async () => {

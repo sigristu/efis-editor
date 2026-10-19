@@ -90,7 +90,7 @@ describe('ChecklistItemsComponent', () => {
     const newItem = checklist!.items[origSize];
 
     expect(newItem.type).toEqual(ChecklistItem_Type.ITEM_CHALLENGE);
-    expect(newItem.prompt).toEqual('New item');
+    expect(newItem.prompt).toEqual('');
     expect(newItem.expectation).toEqual('');
     expect(checklistChange).toHaveBeenCalledExactlyOnceWith(checklist);
   });
@@ -99,15 +99,17 @@ describe('ChecklistItemsComponent', () => {
     const origSize = checklist!.items.length;
     const addButton = screen.getByRole('button', { name: 'Add a new checklist challenge..response' });
     await user.click(addButton);
-    await user.keyboard('[Enter]');
+    // New items start out empty, so text must be entered before they can be saved.
+    await user.keyboard('Challenge');
+    await user.type(screen.getByRole('textbox', { name: 'Expectation text' }), 'Response[Enter]');
 
     expect(checklist!.items).toHaveLength(origSize + 1);
 
     const newItem = checklist!.items[origSize];
 
     expect(newItem.type).toEqual(ChecklistItem_Type.ITEM_CHALLENGE_RESPONSE);
-    expect(newItem.prompt).toEqual('New item');
-    expect(newItem.expectation).toEqual('New expectation');
+    expect(newItem.prompt).toEqual('Challenge');
+    expect(newItem.expectation).toEqual('Response');
     expect(checklistChange).toHaveBeenCalledTimes(2);
     expect(checklistChange).toHaveBeenCalledWith(checklist);
   });
@@ -123,7 +125,7 @@ describe('ChecklistItemsComponent', () => {
     const newItem = checklist!.items[origSize];
 
     expect(newItem.type).toEqual(ChecklistItem_Type.ITEM_PLAINTEXT);
-    expect(newItem.prompt).toEqual('New item');
+    expect(newItem.prompt).toEqual('');
     expect(newItem.expectation).toEqual('');
     expect(checklistChange).toHaveBeenCalledExactlyOnceWith(checklist);
   });
@@ -139,7 +141,7 @@ describe('ChecklistItemsComponent', () => {
     const newItem = checklist!.items[origSize];
 
     expect(newItem.type).toEqual(ChecklistItem_Type.ITEM_NOTE);
-    expect(newItem.prompt).toEqual('New item');
+    expect(newItem.prompt).toEqual('');
     expect(newItem.expectation).toEqual('');
     expect(checklistChange).toHaveBeenCalledExactlyOnceWith(checklist);
   });
@@ -155,7 +157,7 @@ describe('ChecklistItemsComponent', () => {
     const newItem = checklist!.items[origSize];
 
     expect(newItem.type).toEqual(ChecklistItem_Type.ITEM_TITLE);
-    expect(newItem.prompt).toEqual('New item');
+    expect(newItem.prompt).toEqual('');
     expect(newItem.expectation).toEqual('');
     expect(checklistChange).toHaveBeenCalledExactlyOnceWith(checklist);
   });
@@ -171,7 +173,7 @@ describe('ChecklistItemsComponent', () => {
     const newItem = checklist!.items[origSize];
 
     expect(newItem.type).toEqual(ChecklistItem_Type.ITEM_WARNING);
-    expect(newItem.prompt).toEqual('New item');
+    expect(newItem.prompt).toEqual('');
     expect(newItem.expectation).toEqual('');
     expect(checklistChange).toHaveBeenCalledExactlyOnceWith(checklist);
   });
@@ -187,7 +189,7 @@ describe('ChecklistItemsComponent', () => {
     const newItem = checklist!.items[origSize];
 
     expect(newItem.type).toEqual(ChecklistItem_Type.ITEM_CAUTION);
-    expect(newItem.prompt).toEqual('New item');
+    expect(newItem.prompt).toEqual('');
     expect(newItem.expectation).toEqual('');
     expect(checklistChange).toHaveBeenCalledExactlyOnceWith(checklist);
   });
@@ -222,7 +224,7 @@ describe('ChecklistItemsComponent', () => {
     const newItem = checklist!.items[1];
 
     expect(newItem.type).toEqual(ChecklistItem_Type.ITEM_NOTE);
-    expect(newItem.prompt).toEqual('New item');
+    expect(newItem.prompt).toEqual('');
   });
 
   it('should delete an item', async () => {

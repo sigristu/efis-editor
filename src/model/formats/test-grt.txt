@@ -2,7 +2,7 @@
 
 LIST Test group 1 checklist 1
 ITEM Challenge item
-ITEM Challenge item 2 - Item response
+ITEM Challenge item 2                                                                                                                                                                           - Item response
 ITEM Plain text item
 ITEM NOTE: Note item
 ITEM ** Subtitle item **

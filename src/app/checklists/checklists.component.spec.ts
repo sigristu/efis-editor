@@ -154,7 +154,7 @@ describe('ChecklistsComponent', () => {
     if (prompt) {
       await storageCompleted(completed);
 
-      const item = screen.getByRole('listitem', { name: 'Item: New item' });
+      const item = screen.getByRole('listitem', { name: 'Item:' });
       const itemPromptBox = await within(item).findByRole('textbox', { name: 'Prompt text' });
       await retype(itemPromptBox, prompt);
 
@@ -690,7 +690,7 @@ describe('ChecklistsComponent', () => {
       await rendered.fixture.whenStable();
 
       // Click Open File to open the file picker
-      const openButton = screen.getByRole('button', { name: 'Open file' });
+      const openButton = screen.getByRole('button', { name: 'Open file from storage' });
       await user.click(openButton);
 
       // Click the select dropdown to open the options list
@@ -849,14 +849,14 @@ describe('ChecklistsComponent', () => {
       const expectedItems = ChecklistsComponent.NEW_ITEM_SHORTCUTS.map((s) =>
         ChecklistItem.create({
           type: s.type,
-          prompt: s.type === ChecklistItem_Type.ITEM_SPACE ? '' : 'New item',
-          expectation: s.type === ChecklistItem_Type.ITEM_CHALLENGE_RESPONSE ? 'New expectation' : '',
+          prompt: '',
+          expectation: '',
         }),
       );
 
       // Check that all the items were rendered.
       await expect(screen.findByRole('listitem', { name: 'Blank item' })).resolves.toBeVisible();
-      expect(screen.getAllByRole('listitem', { name: 'Item: New item' })).toHaveLength(
+      expect(screen.getAllByRole('listitem', { name: 'Item:' })).toHaveLength(
         ChecklistsComponent.NEW_ITEM_SHORTCUTS.length - 1,
       );
 
@@ -1002,11 +1002,12 @@ describe('ChecklistsComponent', () => {
       await debounce();
       rendered.detectChanges(); // HACK: Wait for the item to be added.
       const addCompleted = storageCompletion();
-      await user.keyboard('[Enter]');
+      // The new item is empty and can't be saved, so leave edit mode instead.
+      await user.keyboard('[Escape]');
 
       await expect(addCompleted).resolves.toBe(true);
 
-      await expect(screen.findByRole('listitem', { name: 'Item: New item' })).resolves.toBeInTheDocument();
+      await expect(screen.findByRole('listitem', { name: 'Item:' })).resolves.toBeInTheDocument();
 
       // Delete it.
       const completed = storageCompletion();
@@ -1015,7 +1016,7 @@ describe('ChecklistsComponent', () => {
       // Verify that it's gone from storage and the UI.
       await expectFile('My file', NEW_FILE, completed);
 
-      expect(screen.queryByRole('listitem', { name: 'Item: New item' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('listitem', { name: 'Item:' })).not.toBeInTheDocument();
 
       // Also delete the other that was already there (it should have been selected after the other was deleted).
       const completed2 = storageCompletion();
