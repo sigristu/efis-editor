@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>SkyDemon checklists</h2>
+<mat-dialog-content>
+  <p>
+    SkyDemon sorts checklists by flight phase. Check the phase of each checklist, and whether SkyDemon should reset it
+    automatically, before exporting.
+  </p>
+  @for (group of groups; track $index) {
+    <h3 class="group-title">{{ group.title }}</h3>
+    @for (row of group.rows; track $index) {
+      <div class="checklist-row" role="group" [attr.aria-label]="row.checklistTitle">
+        <span class="checklist-title">{{ row.checklistTitle }}</span>
+        <mat-form-field class="phase-select" subscriptSizing="dynamic">
+          <mat-select [(value)]="row.phase" [aria-label]="`Flight phase of ${row.checklistTitle}`">
+            @for (option of _phaseOptions; track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-checkbox
+          [(ngModel)]="row.autoReset"
+          [disabled]="row.phase === _skip"
+          [aria-label]="`Auto reset ${row.checklistTitle}`"
+        >
+          Auto reset
+        </mat-checkbox>
+        <span class="suggestion-source">{{ _sourceLabel(row) }}</span>
+      </div>
+    }
+  }
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="groups">Export</button>
+  <button mat-button [mat-dialog-close]="undefined">Cancel</button>
+</mat-dialog-actions>

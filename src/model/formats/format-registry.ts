@@ -18,6 +18,7 @@ import { GarminPilotFormat } from './garmin-pilot-format';
 import { GrtFormat } from './grt-format';
 import { JsonFormat } from './json-format';
 import { PdfFormat } from './pdf-format';
+import { SkyDemonFormat } from './skydemon-format';
 import { TXT_EXTENSION } from './text-format-options';
 
 class FormatRegistry {
@@ -98,6 +99,7 @@ FORMAT_REGISTRY.register(GrtFormat, FormatId.GRT, 'Grand Rapids Technologies', {
 });
 FORMAT_REGISTRY.register(JsonFormat, FormatId.JSON, 'Raw data');
 FORMAT_REGISTRY.register(PdfFormat, FormatId.PDF, 'Printable PDF', { supportsImport: false });
+FORMAT_REGISTRY.register(SkyDemonFormat, FormatId.SKYDEMON, 'SkyDemon aircraft profile', { supportsImport: false });
 
 export async function serializeChecklistFile(
   checklistFile: ChecklistFile,

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Aircraft AirframeType="Aeroplane" MinimumRunwayLengthMetres="500" Name="RV-14A_checklist_test" Registration="HB-xxx" HexCode="4B41F2" BRS="False" FuelType="AvGas100LL" AlternateFuelType="None" FuelMeasurementType="Volume" FuelMeasurementVolumeType="Litres" FuelMeasurementMassType="Kilograms" TaxiFuel="10.000000" LandingFuel="5.000000" FinalReserveMinutes="45" MaxFuel="190.000000" WeightBalanceType="Standard" EmptyWeight="590.500000" MaximumWeight="930.600000" EmptyArmLon="81.40" EmptyArmLat="0.00" MinimumArmLat="0.00" MaximumArmLat="0.00" Type="RV14" ColourMarkings="" ServiceCeiling="20000" Equipment1="GY" Equipment2="E" OtherCommsEquipment="" OtherNavEquipment="" PbnEquipment="" FuelContingency="0.10" HoldingMinutes="10" HourlyCost="200" HourlyCostIncludesFuel="True" GlideAirspeed="84.00" GlideRatio="8.00" DefaultLevel="6500" EnvelopeType="DatumDistance" Envelope="82.08,540.000000,82.08,929.900000,88.24,929.900000,88.24,540.000000,82.08,540.000000">
+  <ClimbProfile FpmSL="1200.000000" FpmSC="300.000000" IndicatedAirspeed="99.000000" FuelBurnSL="45.000000" FuelBurnSC="30.000000" />
+  <DescentProfile Fpm="-500.000000" IndicatedAirspeed="150.000000" FuelBurn="22.000000" />
+  <CruiseProfiles>
+    <CruiseProfile Name="Cruiese Power" AirspeedType="True" FuelBurn="31.000000" IndicatedAirspeed="150.000000" Airspeed="150.000000">
+      <Entry Level="8500" Airspeed="150.000000" FuelBurn="31.000000" />
+    </CruiseProfile>
+    <CruiseProfile Name="Slow Cruise" AirspeedType="True" FuelBurn="29.000000" IndicatedAirspeed="140.000000" Airspeed="140.000000">
+      <Entry Level="8500" Airspeed="140.000000" FuelBurn="29.000000" />
+    </CruiseProfile>
+  </CruiseProfiles>
+  <LoadingPoints>
+    <FuelLoadingPoint Name="Fuel" LeverArm="81.97" LeverArmLat="0.00" DefaultValue="130.00" Capacity="190.00" Unusable="1.00" />
+    <LoadingPoint Name="Pilot" LeverArm="99.83" LeverArmLat="0.00" DefaultValue="90.00" />
+    <LoadingPoint Name="Front Passenger" LeverArm="99.83" LeverArmLat="0.00" DefaultValue="60.00" />
+  </LoadingPoints>
+  <ChecklistBundle>
+    <Checklist Name="PREFLIGHT CHECK" FlightPhase="Preflight">
+      <Section Name="PREFLIGHT">
+        <CheckItem Challenge="Outside check" Response="COMPLETED" />
+        <CheckItem Challenge="Aircraft Docs / Log" Response="CHECKED" />
+        <CheckItem Challenge="Loading" Response="COMPLETED" />
+        <CheckItem Challenge="Tow bar" Response="REMOVED &amp; SECURED" />
+        <CheckItem Challenge="Pax" Response="INSTRUCTED" />
+        <CheckItem Challenge="Fuel key" Response="ON BOARD" />
+        <CheckItem Challenge="Starter" Response="ENABLED" />
+      </Section>
+    </Checklist>
+    <Checklist Name="BEFORE STARTING ENGINE" FlightPhase="Preflight">
+      <Section Name="BEFORE ENGINE START">
+        <CheckItem Challenge="Battery Master" Response="ON" />
+        <CheckItem Challenge="Brakes" Response="SET" />
+        <CheckItem Challenge="Chocks / Tow bar" Response="REMOVED" />
+        <CheckItem Challenge="Seat belts" Response="FASTENED" />
+        <CheckItem Challenge="Canopy" Response="CLOSED" />
+        <CheckItem Challenge="El. consumers" Response="ALL OFF" />
+        <CheckItem Challenge="Fuel quantity" Response="ADJUSTED" />
+        <CheckItem Challenge="Fuel selector" Response="FULLER TANK" />
+        <CheckItem Challenge="Alternate air" Response="CLOSED" />
+        <CheckItem Challenge="Cowl flap" Response="OPEN" />
+      </Section>
+    </Checklist>
+    <Checklist Name="CRUISE" FlightPhase="DuringFlight">
+      <Section Name="Section Title" AutoReset="True" Header="Section Header" Footer="Section Footer">
+        <CheckItem Challenge="First Item" Response="Checked" />
+        <CheckItem Challenge="Second Item" Response="Checked" />
+      </Section>
+    </Checklist>
+    <Checklist Name="Postflight Checklist" FlightPhase="Postflight">
+      <Section Name="First Section" Header="Header" Footer="Footer">
+        <CheckItem Challenge="First Item" Response="Checked" />
+        <CheckItem Challenge="Second Item" Response="Checked" />
+      </Section>
+      <Section Name="Second Section" Header="Header" Footer="Footer">
+        <CheckItem Challenge="Challenge" Response="Response" />
+      </Section>
+    </Checklist>
+    <Checklist Name="Emergency Checklist" FlightPhase="Emergency">
+      <Section Name="Emergency Section" Header="Header" Footer="Footer">
+        <CheckItem Challenge="First Item" Response="Checked" />
+        <CheckItem Challenge="Second Item" Response="Checked" />
+      </Section>
+    </Checklist>
+  </ChecklistBundle>
+</Aircraft>

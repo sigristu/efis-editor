@@ -27,8 +27,11 @@ import {
   ChecklistGroup_Category,
   ChecklistItem_Type,
 } from '../../../gen/ts/checklist';
+import { ExportOptions } from '../../model/formats/abstract-format';
+import { FormatError } from '../../model/formats/error';
 import { FormatId } from '../../model/formats/format-id';
 import { serializeChecklistFile } from '../../model/formats/format-registry';
+import { SKYDEMON_AIRCRAFT_EXTENSION, SkyDemonExportOptions } from '../../model/formats/skydemon-format';
 import { ChecklistStorage } from '../../model/storage/checklist-storage';
 import { GoogleDriveStorage } from '../../model/storage/gdrive';
 import { LocalFileStorage } from '../../model/storage/local-file-storage';
@@ -40,6 +43,7 @@ import { ChecklistTreeComponent } from './checklist-tree/checklist-tree.componen
 import { ChecklistCommandBarComponent } from './command-bar/command-bar.component';
 import { ChecklistFileInfoComponent } from './dialogs/file-info/file-info.component';
 import { PrintDialogComponent } from './dialogs/print-dialog/print-dialog.component';
+import { SkyDemonDialogComponent } from './dialogs/skydemon-dialog/skydemon-dialog.component';
 import { UnsavedChangesDialogComponent } from './dialogs/unsaved-changes-dialog/unsaved-changes-dialog.component';
 import { ChecklistFilePickerComponent } from './file-picker/file-picker.component';
 import { ChecklistFileUploadComponent } from './file-upload/file-upload.component';
@@ -610,10 +614,28 @@ export class ChecklistsComponent implements OnInit, AfterViewInit, OnDestroy, Ho
 
     if (!this.selectedFile) return;
 
-    const pdfRequested = formatId === FormatId.PDF;
-    const pdfOptions = pdfRequested ? await PrintDialogComponent.show(this._dialog, this._prefs) : undefined;
-    if (pdfRequested && pdfOptions === undefined) {
-      throw new Error('PDF options dialog cancelled');
+    let exportOptions: ExportOptions | undefined;
+    if (formatId === FormatId.PDF) {
+      exportOptions = await PrintDialogComponent.show(this._dialog, this._prefs);
+      if (exportOptions === undefined) {
+        throw new Error('PDF options dialog cancelled');
+      }
+    } else if (formatId === FormatId.SKYDEMON) {
+      // SkyDemon checklists live inside an aircraft profile, so pick the one to add them to.
+      const aircraftFile = await ChecklistsComponent._pickFile(SKYDEMON_AIRCRAFT_EXTENSION);
+      if (!aircraftFile) return;
+      let checklists;
+      try {
+        checklists = await SkyDemonDialogComponent.show(this._dialog, this._prefs, this.selectedFile, aircraftFile);
+      } catch (error) {
+        if (error instanceof FormatError) {
+          this._snackBar.open(`Export failed: ${error.message}`, '');
+          return;
+        }
+        throw error;
+      }
+      if (!checklists) return;
+      exportOptions = { aircraftFile, checklists } satisfies SkyDemonExportOptions;
     }
 
     // Some format generations, notably PDF, can take a while - show a spinner.
@@ -625,8 +647,13 @@ export class ChecklistsComponent implements OnInit, AfterViewInit, OnDestroy, Ho
           () => {
             const fn = async () => {
               try {
-                const f = await serializeChecklistFile(this.selectedFile!, formatId, pdfOptions);
+                const f = await serializeChecklistFile(this.selectedFile!, formatId, exportOptions);
                 saveAs(f, f.name);
+              } catch (error) {
+                if (error instanceof FormatError) {
+                  this._snackBar.open(`Export failed: ${error.message}`, '');
+                }
+                throw error;
               } finally {
                 await this._spinner.hide(this._downloadSpinner);
               }
@@ -735,6 +762,21 @@ export class ChecklistsComponent implements OnInit, AfterViewInit, OnDestroy, Ho
     }
 
     this._completeStorage(completed$);
+  }
+
+  private static async _pickFile(accept: string): Promise<File | undefined> {
+    return new Promise((resolve) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = accept;
+      input.onchange = () => {
+        resolve(input.files?.[0]);
+      };
+      input.oncancel = () => {
+        resolve(undefined);
+      };
+      input.click();
+    });
   }
 
   private _startStorage(): Subject<boolean> | undefined {

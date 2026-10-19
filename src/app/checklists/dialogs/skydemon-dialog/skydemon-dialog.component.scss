@@ -1,0 +1,28 @@
+@use '@angular/material' as mat;
+@use '../../../../theme' as theme;
+
+.group-title {
+  margin: 16px 0 4px;
+}
+
+.checklist-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.checklist-title {
+  flex-grow: 1;
+  min-width: 200px;
+}
+
+.phase-select {
+  width: 170px;
+}
+
+.suggestion-source {
+  width: 90px;
+  font-size: small;
+  color: mat.get-theme-color(theme.$efis-editor-theme, neutral, 60);
+}

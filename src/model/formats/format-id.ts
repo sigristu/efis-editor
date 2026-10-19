@@ -10,4 +10,5 @@ export const enum FormatId {
   GRT = 'grt',
   JSON = 'json',
   PDF = 'pdf',
+  SKYDEMON = 'aircraft',
 }
