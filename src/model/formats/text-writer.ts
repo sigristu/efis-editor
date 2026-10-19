@@ -15,6 +15,9 @@ import {
 
 export class TextWriter {
   private static readonly CRLF = '\r\n';
+  // Prompts longer than this are neither used for nor padded by response alignment, so that
+  // a single long item doesn't push all responses far to the right.
+  private static readonly MAX_ALIGNED_PROMPT_LENGTH = 40;
   private readonly _titleSuffix: string;
   private readonly _parts: string[] = [];
   // Let tests override our date.
@@ -125,10 +128,14 @@ export class TextWriter {
         // Calculate available space considering indent
         const indentWidth = item.centered ? 0 : item.indent * this._options.indentWidth;
         const availableSpace = this._options.maxLineLength ? this._options.maxLineLength - indentWidth : Infinity;
-        const expectationLength = this._options.expectationSeparator.length + this._normalizeText(item.expectation).length;
+        const expectationLength =
+          this._options.expectationSeparator.length + this._normalizeText(item.expectation).length;
 
-        // Only consider this item if the full line would fit on one line
-        if (promptLength + expectationLength <= availableSpace) {
+        // Only consider this item if it's not too long and the full line would fit on one line
+        if (
+          promptLength <= TextWriter.MAX_ALIGNED_PROMPT_LENGTH &&
+          promptLength + expectationLength <= availableSpace
+        ) {
           maxPromptLength = Math.max(maxPromptLength, promptLength);
         }
       }
@@ -170,7 +177,7 @@ export class TextWriter {
           throw new FormatError(`Unexpected item type: ${item.type.valueOf()}`);
       }
 
-      let promptPart = prefix + this._normalizeText(item.prompt);
+      const promptPart = prefix + this._normalizeText(item.prompt);
       let fullLine = promptPart;
 
       if (item.expectation) {
@@ -179,7 +186,8 @@ export class TextWriter {
         if (dashPosition !== undefined && item.type === ChecklistItem_Type.ITEM_CHALLENGE_RESPONSE) {
           const indentWidth = item.centered ? 0 : item.indent * this._options.indentWidth;
           const availableSpace = this._options.maxLineLength ? this._options.maxLineLength - indentWidth : Infinity;
-          const expectationLength = this._options.expectationSeparator.length + this._normalizeText(item.expectation).length;
+          const expectationLength =
+            this._options.expectationSeparator.length + this._normalizeText(item.expectation).length;
 
           // Only align if the full line would fit
           if (promptPart.length + expectationLength <= availableSpace) {

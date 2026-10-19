@@ -3,7 +3,7 @@
 CHKLST0.TITLE, Test group 1 checklist 1
 CHKLST0.LINE1,
 CHKLST0.LINE2, Challenge item
-CHKLST0.LINE3, Challenge item 2                                                                                                                                                                           - Item response
+CHKLST0.LINE3, Challenge item 2 - Item response
 CHKLST0.LINE4, Plain text item
 CHKLST0.LINE5, NOTE: Note item
 CHKLST0.LINE6, ** Subtitle item **

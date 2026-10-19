@@ -1,3 +1,4 @@
+import { ChecklistFile, ChecklistItem, ChecklistItem_Type } from '../../../gen/ts/checklist';
 import { FormatId } from './format-id';
 import { parseChecklistFile, serializeChecklistFile } from './format-registry';
 import { GRT_EXPECTED_CONTENTS } from './test-data';
@@ -29,5 +30,41 @@ describe('GrtFormat', () => {
     const readLines = readData.split('\r\n');
 
     expect(writtenLines).toEqual(readLines);
+  });
+
+  it('aligns responses, ignoring overly long prompts', async () => {
+    const challengeResponse = (prompt: string, expectation: string) =>
+      ChecklistItem.create({ type: ChecklistItem_Type.ITEM_CHALLENGE_RESPONSE, prompt, expectation });
+    const file = ChecklistFile.create({
+      groups: [
+        {
+          title: 'Group',
+          checklists: [
+            {
+              title: 'Checklist',
+              items: [
+                challengeResponse('Fuel', 'On'),
+                challengeResponse('Mixture', 'Rich'),
+                challengeResponse('A prompt that is much too long to be used for alignment', 'Done'),
+              ],
+            },
+          ],
+        },
+      ],
+      metadata: { name: 'Alignment' },
+    });
+
+    const writtenFile = await serializeChecklistFile(file, FormatId.GRT);
+    const writtenData = new TextDecoder('UTF-8').decode(await writtenFile.arrayBuffer());
+    const writtenLines = writtenData.split('\r\n');
+
+    expect(writtenLines).toContain('ITEM Fuel    - On');
+    expect(writtenLines).toContain('ITEM Mixture - Rich');
+    expect(writtenLines).toContain('ITEM A prompt that is much too long to be used for alignment - Done');
+
+    // Reading it back must not keep the alignment padding.
+    const readFile = await parseChecklistFile(new File([writtenFile], 'test.txt'));
+
+    expect(readFile.groups[0].checklists[0].items).toEqual(file.groups[0].checklists[0].items);
   });
 });
