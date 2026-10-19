@@ -237,7 +237,8 @@ export class TextReader {
       if (responseSepIdx !== -1) {
         itemType = ChecklistItem_Type.ITEM_CHALLENGE_RESPONSE;
         expectation = prompt.slice(responseSepIdx + this._options.expectationSeparator.length);
-        prompt = prompt.slice(0, responseSepIdx);
+        // Strip any padding used to align the expectation separators.
+        prompt = prompt.slice(0, responseSepIdx).trimEnd();
       }
     }
 
