@@ -576,8 +576,9 @@ export class ChecklistsComponent implements OnInit, AfterViewInit, OnDestroy, Ho
       const file = await this._localFileStorage.openFile();
       if (file) {
         // Save to browser storage and display
+        const completed$ = this._startStorage();
         await Promise.all([this.store.saveChecklistFile(file), this._displayFile(file)]);
-        this._notifyComplete();
+        this._completeStorage(completed$);
       }
     } catch (error: any) {
       console.error('Failed to open local file:', error);
